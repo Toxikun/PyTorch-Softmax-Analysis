@@ -30,6 +30,10 @@ def train_model(model, X_train, y_train, X_val, y_val, X_test, y_test, lr, reg_t
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=lr)
     
+    # Step scheduler: reduces LR by half every 20 epochs(this was optional in the pdf so I added
+    #to prevent overfitting)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.5)
+    
     history = {'train_loss': [], 'val_loss': [], 'test_loss': []}
     
     lambda_val = 0.01 # You can tune this
@@ -47,6 +51,9 @@ def train_model(model, X_train, y_train, X_val, y_val, X_test, y_test, lr, reg_t
         optimizer.zero_grad()
         total_loss.backward()
         optimizer.step()
+        
+        # Step the learning rate scheduler
+        scheduler.step()
         
         # Evaluate on train
         history['train_loss'].append(total_loss.item())
