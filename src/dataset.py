@@ -5,11 +5,7 @@ from sklearn.preprocessing import StandardScaler
 import numpy as np
 
 def get_iris_data():
-    """
-    Downloads/imports the Iris dataset and random splits it into 70% train, 15% validation, 15% test.
-    Returns PyTorch tensors.
-    """
-    iris = load_iris()
+    iris = load_iris()#imports the Iris dataset
     X = iris.data
     y = iris.target
 
@@ -38,30 +34,22 @@ def get_iris_data():
     return X_train_t, y_train_t, X_val_t, y_val_t, X_test_t, y_test_t
 
 def expand_features(X, degree=1):
-    """
-    Expands the feature matrix X to include polynomial terms.
-    degree=1: linear (x_i)
-    degree=2: linear + quadratic (x_i^2, x_i x_j)
-    degree=3: linear + quadratic + cubic (x_i^3, x_i^2 x_j, x_i x_j x_k)
-    
-    Hint: Can use itertools.combinations_with_replacement or manually compute these.
-    Here is a skeleton.
-    """
+ 
     num_samples, num_features = X.shape
     features = [X]
     
-    from itertools import combinations_with_replacement
+    from itertools import combinations_with_replacement#used to generate combinations of features
     
     if degree >= 2:
         quad_terms = []
-        for i, j in combinations_with_replacement(range(num_features), 2):
-            quad_terms.append((X[:, i] * X[:, j]).unsqueeze(1))
+        for i, j in combinations_with_replacement(range(num_features), 2):#generates combinations of features
+            quad_terms.append((X[:, i] * X[:, j]).unsqueeze(1))#adds the quadratic terms to the list of features
         features.append(torch.cat(quad_terms, dim=1))
         
     if degree >= 3:
         cub_terms = []
-        for i, j, k in combinations_with_replacement(range(num_features), 3):
-            cub_terms.append((X[:, i] * X[:, j] * X[:, k]).unsqueeze(1))
+        for i, j, k in combinations_with_replacement(range(num_features), 3):#generates combinations of features
+            cub_terms.append((X[:, i] * X[:, j] * X[:, k]).unsqueeze(1))#adds the cubic terms to the list of features
         features.append(torch.cat(cub_terms, dim=1))
 
-    return torch.cat(features, dim=1) if len(features) > 1 else features[0]
+    return torch.cat(features, dim=1) if len(features) > 1 else features[0]#concatenates the features
